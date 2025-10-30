@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { UserApi } from "../../../server/users"
+import { useRouter } from "next/navigation"
 
 type AuthFormProps = {
   allowDemo: boolean
@@ -8,13 +9,14 @@ type AuthFormProps = {
 }
 
 export const AuthForm = (props: AuthFormProps) => {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   )
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const validationErrors: { email?: string; password?: string } = {}
 
@@ -25,50 +27,70 @@ export const AuthForm = (props: AuthFormProps) => {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
+    }
+
+    if (props.type === "login") {
+      try {
+        await UserApi.login({ email, password })
+        router.push("/applications")
+      } catch (error) {
+        console.error("Login failed:", error)
+      }
     } else {
-      console.log({ email, password })
+      try {
+        await UserApi.register({ email, password })
+        router.push("/applications")
+      } catch (error) {
+        console.error("Registration failed:", error)
+      }
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {errors.password && <p>{errors.password}</p>}
-      </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {errors.password && <p>{errors.password}</p>}
+        </div>
 
-      <button type="submit">Submit</button>
+        <button type="submit">Submit</button>
+      </form>
       {props.allowDemo && (
         <button
           onClick={async () => {
-            const userData = await UserApi.login({
-              email: "test@mail.com",
-              password: "password",
-            })
-            localStorage.setItem("authToken", userData.token)
+            try {
+              await UserApi.login({
+                email: "test@mail.com",
+                password: "password",
+              })
+              router.push("/applications")
+            } catch (error) {
+              console.error("Demo login failed", error)
+            }
           }}
         >
           Demo
         </button>
       )}
-    </form>
+    </div>
   )
 }
