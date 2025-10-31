@@ -63,21 +63,22 @@ export const ApplicationApi: ApplicationApi = {
   getAllApplications: async () => {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value || ""
-    const resp = await fetch(`${baseUrl}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Cookie: `token=${token}` },
-    })
-    if (resp.status === 401) {
-      redirect("/login")
-    }
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => "")
-      throw new Error(
-        `Fetch all applications failed: ${resp.status} ${resp.statusText} ${text}`
-      )
-    }
+    try {
+      const resp = await fetch(`${baseUrl}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `token=${token}`,
+        },
+      })
+      if (resp.status === 401) {
+        redirect("/login")
+      }
 
-    return resp.json()
+      return resp.json()
+    } catch (error) {
+      throw new Error("Failed to fetch applications")
+    }
   },
   getApplication: async (id) => {
     const resp = await fetch(`${baseUrl}/${id}`, {
