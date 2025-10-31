@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { UserApi } from "../../../server/users"
 import { useRouter } from "next/navigation"
+import { useAuth } from "../hooks/useAuth"
 
 type AuthFormProps = {
   allowDemo: boolean
@@ -9,6 +10,7 @@ type AuthFormProps = {
 }
 
 export const AuthForm = (props: AuthFormProps) => {
+  const user = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -32,6 +34,7 @@ export const AuthForm = (props: AuthFormProps) => {
     if (props.type === "login") {
       try {
         await UserApi.login({ email, password })
+        user.login(true)
         router.push("/applications")
       } catch (error) {
         console.error("Login failed:", error)
@@ -39,6 +42,7 @@ export const AuthForm = (props: AuthFormProps) => {
     } else {
       try {
         await UserApi.register({ email, password })
+        user.login(true)
         router.push("/applications")
       } catch (error) {
         console.error("Registration failed:", error)
@@ -82,6 +86,7 @@ export const AuthForm = (props: AuthFormProps) => {
                 email: "test@mail.com",
                 password: "password",
               })
+              user.login(true)
               router.push("/applications")
             } catch (error) {
               console.error("Demo login failed", error)

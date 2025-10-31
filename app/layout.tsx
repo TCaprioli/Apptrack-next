@@ -1,9 +1,10 @@
 import CssBaseline from "@mui/material/CssBaseline"
 import { AuthButton } from "../features/auth/components/AuthButton"
+import { AuthProvider } from "../features/auth/components/AuthProvider"
 export const metadata = {
   title: "Apptrack",
 }
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
@@ -15,8 +16,10 @@ export default function RootLayout({
       </head>
       <body>
         <CssBaseline />
-        <AuthButton />
-        {children}
+        <AuthProvider>
+          <AuthButton />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

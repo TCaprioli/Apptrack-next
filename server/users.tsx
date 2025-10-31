@@ -1,9 +1,10 @@
-type UserData = { id: number; email: string; token: string }
+export type UserData = { id: number; email: string; token: string }
 
 interface UserApi {
   login: (args: { email: string; password: string }) => Promise<UserData>
   register: (args: { email: string; password: string }) => Promise<UserData>
   logout: () => Promise<void>
+  verify: () => Promise<UserData | null>
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL + "/users"
@@ -44,5 +45,23 @@ export const UserApi: UserApi = {
       },
       credentials: "include",
     })
+  },
+  verify: async () => {
+    try {
+      const resp = await fetch(`${baseUrl}/me`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+      if (!resp.ok) {
+        return null
+      }
+      return resp.json()
+    } catch (error) {
+      console.error("Error verifying user:", error)
+      return null
+    }
   },
 }
