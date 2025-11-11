@@ -1,5 +1,6 @@
 import { ApplicationApi } from "../../../server/applications"
 import { ApplicationView } from "../../../features/applications/components/ApplicationView"
+import { ApplicationForm } from "../../../features/applications/components/ApplicationForm"
 
 export default async function Applications() {
   try {
@@ -7,6 +8,7 @@ export default async function Applications() {
     return (
       <div>
         <ApplicationView applications={applications} />
+        <ApplicationForm application={null} />
       </div>
     )
   } catch (error) {
