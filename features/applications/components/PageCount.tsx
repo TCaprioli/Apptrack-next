@@ -22,17 +22,12 @@ export const PageCount = (props: PageCountProps) => {
     }
   }, [props])
   return (
-    <div className="flex flex-row items-center">
-      <button
-        className="disabled:border-none disabled:text-gray-500"
-        disabled={props.page === 1}
-        onClick={props.decrement}
-      >
+    <div>
+      <button disabled={props.page === 1} onClick={props.decrement}>
         {"<"}
       </button>
       <span>{props.page}</span>
       <button
-        className="disabled:border-none disabled:text-gray-500"
         disabled={props.totalItems <= APPLICATIONS_PER_PAGE * props.page}
         onClick={props.increment}
       >

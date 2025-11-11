@@ -19,9 +19,7 @@ export const ApplicationItem = (props: ApplicationItemProps) => {
       <td>{props.app.status}</td>
       <td>
         {/* TODO: Add favorites */}
-        <button className=" w-14" onClick={() => setDisplayMenu(true)}>
-          menu
-        </button>
+        <button onClick={() => setDisplayMenu(true)}>menu</button>
         {displayMenu && (
           <div>
             <ul>
